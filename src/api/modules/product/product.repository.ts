@@ -19,7 +19,7 @@ export class ProductRepository {
   constructor() {}
 
   getAllProducts = async (): Promise<IProduct[]> => {
-    return [];
+    return PRODUCTS_MOCK;
   };
 
   getProductById = async (filter: { id: number }): Promise<IProduct | null> => {

@@ -1,14 +1,14 @@
 import { NextFunction, Request, Response } from 'express';
-import { IEvent } from './event.model';
+import { IEventDTO } from './event.model';
 import { eventHandlerService } from './event-handler.service';
 
 class EventHandlerController {
   constructor() {}
 
-  handleEvent = async (req: Request<{}, {}, IEvent>, res: Response<{ message: string }>, next: NextFunction) => {
+  handleEvent = async (req: Request<{}, {}, IEventDTO>, res: Response<{ message: string }>, next: NextFunction) => {
     try {
       const event = req.body;
-      await eventHandlerService.handleEvent(event);
+      await eventHandlerService.handleEvent({ ...event, timestamp: event.timestamp ?? new Date().toISOString() });
       res.status(200).json({ message: 'Event handled' });
     } catch (err) {
       next(err);
