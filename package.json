@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start:api:dev": "npx tsx watch src/api/app.ts",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "npx prettier --write .",
@@ -33,6 +34,7 @@
     "insta": "^0.0.1",
     "jiti": "^2.7.0",
     "prettier": "3.9.4",
+    "tsx": "^4.23.0",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.62.1"
   }
