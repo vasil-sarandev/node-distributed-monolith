@@ -2,12 +2,15 @@ services:
   api:
     build:
       context: .
-    command: npx tsx watch src/api/app.ts
+      target: development
     environment:
       NODE_ENV: development
       PORT: 3000
     ports:
       - 3000:3000
+    volumes:
+      - .:/usr/src/app #mount the root directory into the container, so changes to the source code are reflected immediately
+      - /usr/src/app/node_modules #exclude the node_modules directory from the mount, so we don't overwrite the production dependencies
 
   # event-consumer:
   #   build:

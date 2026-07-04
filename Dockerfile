@@ -2,6 +2,19 @@ FROM node:22.16.0-alpine AS base
 # set working directory
 WORKDIR /usr/src/app
 
+
+# --------- Development stage ---------
+
+FROM base AS development
+# copy package.json and package-lock.json
+COPY package.json package-lock.json ./
+# install all dependencies (including devDependencies for tsc)
+RUN npm ci
+# copy source code
+COPY . .
+# start the application in development mode(override per service in docker-compose.yaml)
+CMD ["npx", "tsx", "watch", "src/api/app.ts"]
+
 # --------- Install dependencies stage ---------
 FROM base AS install-deps
 # copy package.json and package-lock.json
@@ -17,7 +30,7 @@ RUN npm ci
 # copy source code
 COPY . .
 # compile the application
-RUN npm run build
+RUN npm run compile
 
 # --------- Runtime stage ---------
 FROM base AS runtime
