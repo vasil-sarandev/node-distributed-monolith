@@ -50,7 +50,7 @@ export default tseslint.config(
     },
     rules: {
       'import-x/order': importOrderRule,
-      'no-empty-object-type': 'warn',
+      '@typescript-eslint/no-empty-object-type': 'warn',
     },
   },
   prettier
