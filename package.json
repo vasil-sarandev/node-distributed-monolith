@@ -7,12 +7,13 @@
     "dev": "npm run compose:up",
     "compose:up": "docker compose -f ./docker-compose.yaml up --build",
     "compose:down": "docker compose -f ./docker-compose.yaml down -v",
-    "compile": "npx tsc && npx tsc-alias",
+    "compile": "npx tsc -p tsconfig.build.json && npx tsc-alias -p tsconfig.build.json",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "npx prettier --write .",
     "format:check": "npx prettier --check .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "repository": {
     "type": "git",
@@ -43,6 +44,7 @@
     "tsc-alias": "^1.9.0",
     "tsx": "^4.23.0",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.62.1"
+    "typescript-eslint": "^8.62.1",
+    "vitest": "^4.1.9"
   }
 }
