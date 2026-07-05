@@ -1,3 +1,6 @@
+import { IUserMarketingConsentMessage } from '../../../shared/kafka/messages/user-marketing-consent';
+import { Topics } from '../../../shared/kafka/topics';
+import { kafkaProducer } from '../../lib/kafka';
 import { IUser } from './user.model';
 import { UserRepository, userRepository } from './user.repository';
 
@@ -14,6 +17,15 @@ class UserService {
 
   getUserById = async (id: number): Promise<IUser | null> => {
     return this.userRepository.getUserById({ id });
+  };
+
+  updateUserMarketingConsent = async ({ user, accepts_marketing }: { user: IUser; accepts_marketing: boolean }) => {
+    const message: IUserMarketingConsentMessage = {
+      id: user.id,
+      email: user.email,
+      accepts_marketing: accepts_marketing,
+    };
+    return kafkaProducer.send({ topic: Topics.USER_MARKETING_CONSENT, message: message });
   };
 }
 

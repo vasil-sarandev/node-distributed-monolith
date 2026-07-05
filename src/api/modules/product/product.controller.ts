@@ -26,6 +26,19 @@ class ProductController {
       next(err);
     }
   };
+
+  handleProductRestock = async (req: Request<{ id: string }, {}, { quantity: number }>, res: Response, next: NextFunction) => {
+    try {
+      const product = await productService.getProductById(parseInt(req.params.id));
+      if (!product) {
+        throw new AppError(404, 'Product not found');
+      }
+      await productService.handleProductRestock({ product, quantity: req.body.quantity });
+      return res.status(200).json({ message: 'Product restock message has been sent for processing' });
+    } catch (err) {
+      next(err);
+    }
+  };
 }
 
 export const productController = new ProductController();

@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "docker compose -f ./docker-compose.yaml up --build",
+    "dev": "npm run compose:up",
+    "compose:up": "docker compose -f ./docker-compose.yaml up --build",
+    "compose:down": "docker compose -f ./docker-compose.yaml down -v",
     "compile": "npx tsc",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -23,7 +25,8 @@
   },
   "homepage": "https://github.com/vasil-sarandev/node-distributed-monolith-starter#readme",
   "dependencies": {
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "kafkajs": "^2.2.4"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
