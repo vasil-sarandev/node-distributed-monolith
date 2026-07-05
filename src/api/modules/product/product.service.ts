@@ -1,6 +1,6 @@
-import { IProductRestockedMessage } from '../../../shared/kafka/messages/product-restocked.model';
-import { Topics } from '../../../shared/kafka/topics';
-import { kafkaProducer } from '../../lib/kafka';
+import { IProductRestockedMessage } from '@shared/kafka/messages/product-restocked.model';
+import { Topics } from '@shared/kafka/topics';
+import { apiKafkaProducer } from '@api/lib/kafka';
 import { IProduct } from './product.model';
 import { ProductRepository, productRepository } from './product.repository';
 
@@ -25,7 +25,7 @@ class ProductService {
       name: product.name,
       quantity,
     };
-    return kafkaProducer.send({ topic: Topics.PRODUCT_RESTOCKED, message: productRestockMessage });
+    return apiKafkaProducer.send({ topic: Topics.PRODUCT_RESTOCKED, message: productRestockMessage });
   };
 }
 

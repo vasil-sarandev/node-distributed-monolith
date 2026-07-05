@@ -1,5 +1,5 @@
 import { Kafka, Producer } from 'kafkajs';
-import { Topics } from './topics';
+import { Topics } from '@shared/kafka/topics';
 
 export type KafkaProducerConfig = {
   clientId: string;

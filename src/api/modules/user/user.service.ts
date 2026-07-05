@@ -1,6 +1,6 @@
-import { IUserMarketingConsentMessage } from '../../../shared/kafka/messages/user-marketing-consent';
-import { Topics } from '../../../shared/kafka/topics';
-import { kafkaProducer } from '../../lib/kafka';
+import { IUserMarketingConsentMessage } from '@shared/kafka/messages/user-marketing-consent.model';
+import { Topics } from '@shared/kafka/topics';
+import { apiKafkaProducer } from '@api/lib/kafka';
 import { IUser } from './user.model';
 import { UserRepository, userRepository } from './user.repository';
 
@@ -25,7 +25,7 @@ class UserService {
       email: user.email,
       accepts_marketing: accepts_marketing,
     };
-    return kafkaProducer.send({ topic: Topics.USER_MARKETING_CONSENT, message: message });
+    return apiKafkaProducer.send({ topic: Topics.USER_MARKETING_CONSENT, message: message });
   };
 }
 

@@ -1,8 +1,8 @@
-import { kafkaProducer } from './lib/kafka';
+import { apiKafkaProducer } from '@api/lib/kafka';
 
 const setupServices = async () => {
   console.log('Setting up app services...');
-  await Promise.all([kafkaProducer.connect()]);
+  await Promise.all([apiKafkaProducer.connect()]);
   console.log('Services setup complete');
 };
 
