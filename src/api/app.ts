@@ -1,9 +1,9 @@
 import express from 'express';
-import { setupApplication } from '@api/setup-app';
 import { PORT } from '@api/env-constants';
-import { loggerMiddleware } from '@api/middlewares/logger.middleware';
 import { errorMiddleware } from '@api/middlewares/error.middleware';
+import { loggerMiddleware } from '@api/middlewares/logger.middleware';
 import { appRouter } from '@api/modules/app-router';
+import { setupApplication } from '@api/setup-app';
 
 const startServer = async () => {
   await setupApplication();

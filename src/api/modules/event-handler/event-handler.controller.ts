@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
-import { IEventDTO } from './event.model';
 import { eventHandlerService } from './event-handler.service';
+import { IEventDTO } from './event.model';
 
 class EventHandlerController {
   constructor() {}

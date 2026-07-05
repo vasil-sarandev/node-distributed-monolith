@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { userRouter } from '@api/modules/user/user.router';
-import { productRouter } from '@api/modules/product/product.router';
 import { eventHandlerRouter } from '@api/modules/event-handler/event-handler.router';
+import { productRouter } from '@api/modules/product/product.router';
+import { userRouter } from '@api/modules/user/user.router';
 
 export const appRouter = Router();
 

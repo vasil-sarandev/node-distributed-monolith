@@ -39,5 +39,5 @@ COPY --from=install-deps /usr/src/app/node_modules ./node_modules
 COPY --from=build /usr/src/app/dist ./dist
 # set environment variables
 ENV NODE_ENV=production
-# start the application (override per service in docker-compose.yaml & deployments configs)
+# start the application (override per service in deployments configs)
 CMD ["node", "dist/api/app.js"]

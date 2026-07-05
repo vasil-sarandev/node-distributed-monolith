@@ -19,6 +19,49 @@ services:
       - /usr/src/app/node_modules #exclude the node_modules directory from the mount, so we don't overwrite the production dependencies
     networks:
       - internal-net
+
+  user-marketing-consumer:
+    build:
+      context: .
+      target: development
+    command: npx tsx watch src/consumers/user-marketing-consumer/index.ts
+    environment:
+      NODE_ENV: development
+      KAFKA_BROKERS: kafka:9092
+      KAFKA_CLIENT_ID: node-distributed-monolith-user-marketing-consumer
+      KAFKA_GROUP_ID: user-marketing-consent-consumer
+    depends_on:
+      kafka:
+        condition: service_healthy
+      kafka-init:
+        condition: service_completed_successfully
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    networks:
+      - internal-net
+
+  product-restocked-consumer:
+    build:
+      context: .
+      target: development
+    command: npx tsx watch src/consumers/product-restocked/index.ts
+    environment:
+      NODE_ENV: development
+      KAFKA_BROKERS: kafka:9092
+      KAFKA_CLIENT_ID: node-distributed-monolith-product-restocked-consumer
+      KAFKA_GROUP_ID: product-restocked-consumer
+    depends_on:
+      kafka:
+        condition: service_healthy
+      kafka-init:
+        condition: service_completed_successfully
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    networks:
+      - internal-net
+
   kafka:
     image: apache/kafka:4.3.1
     environment:
@@ -57,13 +100,6 @@ services:
     networks:
       - internal-net
     restart: 'no'
-
-  # event-consumer:
-  #   build:
-  #     context: .
-  #   command: node dist/consumers/event-consumer/app.js
-  #   environment:
-  #     NODE_ENV: production
 
 networks:
   internal-net:

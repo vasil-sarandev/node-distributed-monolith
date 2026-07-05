@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
+import { AppError } from '@api/middlewares/error.middleware';
 import { IProduct } from './product.model';
 import { productService } from './product.service';
-import { AppError } from '@api/middlewares/error.middleware';
 
 class ProductController {
   constructor() {}

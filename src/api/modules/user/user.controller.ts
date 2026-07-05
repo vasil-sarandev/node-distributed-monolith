@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
-import { userService } from './user.service';
-import { IUser } from './user.model';
 import { AppError } from '@api/middlewares/error.middleware';
+import { IUser } from './user.model';
+import { userService } from './user.service';
 
 class UserController {
   constructor() {}
