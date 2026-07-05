@@ -6,8 +6,8 @@ vi.mock('@api/lib/kafka', () => ({
   apiKafkaProducer: { send },
 }));
 
-import { productService } from '../modules/product/product.service';
 import { Topics } from '@shared/kafka/topics';
+import { productService } from '../modules/product/product.service';
 
 describe('ProductService', () => {
   beforeEach(() => {

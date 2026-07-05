@@ -1,7 +1,7 @@
-import type { NextFunction, Request, Response } from 'express';
 import { describe, expect, it, vi } from 'vitest';
 
 import { AppError, errorMiddleware } from '../middlewares/error.middleware';
+import type { NextFunction, Request, Response } from 'express';
 
 const createMockResponse = () => {
   const res = {
