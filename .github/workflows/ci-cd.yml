@@ -43,13 +43,61 @@ jobs:
         id: ecr-login
 
       - name: Build and push Docker image to ECR
+        id: build-and-push
         env:
           ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
           ECR_REPOSITORY: node-modulith
-          ## a bit redundant rn since build-and-push-image only runs on main branch, but future proof it
-          IMAGE_TAG: ${{ github.ref == 'refs/heads/main' && 'main' || github.sha }}
+          IMAGE_TAG: ${{ github.sha }}
         run: |
           docker build -f ./Dockerfile --target runtime \
             -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:main \
             .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:main
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> "$GITHUB_OUTPUT"
+    outputs:
+      image: ${{ steps.build-and-push.outputs.image }}
+
+  deploy-to-ecs:
+    runs-on: ubuntu-latest
+    needs: [build-and-push-image]
+    permissions:
+      id-token: write
+      contents: read
+    strategy:
+      matrix:
+        include:
+          - service: api
+            container: api
+          - service: user-marketing-consumer
+            container: user-marketing-consumer
+          - service: product-restocked-consumer
+            container: product-restocked-consumer
+    steps:
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Download current task definition
+        run: |
+          aws ecs describe-task-definition \
+            --task-definition ${{ matrix.service }}-task \
+            --query taskDefinition > task-definition.json
+
+      - name: Render new image into task definition
+        id: render
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          container-name: ${{ matrix.container }}
+          image: ${{ needs.build-and-push-image.outputs.image }}
+
+      - name: Deploy to ECS
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          task-definition: ${{ steps.render.outputs.task-definition }}
+          service: ${{ matrix.service }}
+          cluster: node-modulith-cluster
+          wait-for-service-stability: true
