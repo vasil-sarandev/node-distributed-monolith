@@ -56,16 +56,8 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:main
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> "$GITHUB_OUTPUT"
-          echo "--- GITHUB_OUTPUT contents ---"
-          cat "$GITHUB_OUTPUT"
-
-      - run: echo "step output (same job) = '${{ steps.build-and-push.outputs.image }}'"
-
-      - id: secret-free-test
-        run: echo "test=hello-world-no-secrets" >> "$GITHUB_OUTPUT"
     outputs:
       image: ${{ steps.build-and-push.outputs.image }}
-      test: ${{ steps.secret-free-test.outputs.test }}
 
   deploy-to-ecs:
     runs-on: ubuntu-latest
@@ -83,10 +75,6 @@ jobs:
           - service: product-restocked-consumer
             container: product-restocked-consumer
     steps:
-      - run: |
-          echo "got image = '${{ needs['build-and-push-image'].outputs.image }}'"
-          echo "got test = '${{ needs['build-and-push-image'].outputs.test }}'"
-
       - uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
