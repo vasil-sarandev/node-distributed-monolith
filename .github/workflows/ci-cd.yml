@@ -46,7 +46,8 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
           ECR_REPOSITORY: node-modulith
-          IMAGE_TAG: ${{ github.sha }}
+          ## a bit redundant rn since build-and-push-image only runs on main branch, but future proof it
+          IMAGE_TAG: ${{ github.ref == 'refs/heads/main' && 'main' || github.sha }}
         run: |
           docker build -f ./Dockerfile --target runtime \
             -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \

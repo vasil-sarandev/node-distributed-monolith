@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project overview
 
-A TypeScript "modulith": one codebase and one Docker image, but multiple independently deployable processes — an HTTP API and separate Kafka consumers. The API handles HTTP traffic and publishes domain events to Kafka; consumers subscribe to topics and run side effects asynchronously. In production each process runs as a separate ECS service from the same ECR image with a different command.
+A TypeScript modulith: one codebase and one Docker image, but multiple independently deployable processes — an HTTP API and separate Kafka consumers. The API handles HTTP traffic and publishes domain events to Kafka; consumers subscribe to topics and run side effects asynchronously. In production each process runs as a separate ECS service from the same ECR image with a different command.
 
 ```
 Client --> API --> Kafka --> user-marketing-consumer
@@ -26,20 +26,20 @@ Lint and test can run outside Docker (needs Node 22). Running the app itself nee
 
 ## Architecture
 
-| Process | Role | Entrypoint |
-|---------|------|------------|
-| API | HTTP server, publishes events | `src/api/app.ts` |
-| `user-marketing-consumer` | Handles marketing consent updates | `src/consumers/user-marketing-consumer/index.ts` |
-| `product-restocked-consumer` | Handles product restock notifications | `src/consumers/product-restocked/index.ts` |
+| Process                      | Role                                  | Entrypoint                                       |
+| ---------------------------- | ------------------------------------- | ------------------------------------------------ |
+| API                          | HTTP server, publishes events         | `src/api/app.ts`                                 |
+| `user-marketing-consumer`    | Handles marketing consent updates     | `src/consumers/user-marketing-consumer/index.ts` |
+| `product-restocked-consumer` | Handles product restock notifications | `src/consumers/product-restocked/index.ts`       |
 
 Path aliases (see `tsconfig.json`): `@api/*` → `src/api`, `@consumers/*` → `src/consumers`, `@shared/*` → `src/shared`.
 
 **Kafka topics** — the contract between API and consumers, defined as the `Topics` enum in `src/shared/kafka/topics.ts`:
 
-| Topic | Published by | Consumed by |
-|-------|--------------|-------------|
-| `user-marketing-consent` | `POST /api/user/:id/marketing-consent` | `user-marketing-consumer` |
-| `product-restocked` | `POST /api/product/:id/restock` | `product-restocked-consumer` |
+| Topic                    | Published by                           | Consumed by                  |
+| ------------------------ | -------------------------------------- | ---------------------------- |
+| `user-marketing-consent` | `POST /api/user/:id/marketing-consent` | `user-marketing-consumer`    |
+| `product-restocked`      | `POST /api/product/:id/restock`        | `product-restocked-consumer` |
 
 Topics are created on compose startup by `scripts/kafka/create-topics.sh`. When adding a new topic, keep three things in sync: the `Topics` enum, this script, and a new message model under `src/shared/kafka/messages/`.
 
