@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project overview
 
-A TypeScript "distributed monolith": one codebase and one Docker image, but multiple independently deployable processes — an HTTP API and separate Kafka consumers. The API handles HTTP traffic and publishes domain events to Kafka; consumers subscribe to topics and run side effects asynchronously. In production each process runs as a separate ECS service from the same ECR image with a different command.
+A TypeScript "modulith": one codebase and one Docker image, but multiple independently deployable processes — an HTTP API and separate Kafka consumers. The API handles HTTP traffic and publishes domain events to Kafka; consumers subscribe to topics and run side effects asynchronously. In production each process runs as a separate ECS service from the same ECR image with a different command.
 
 ```
 Client --> API --> Kafka --> user-marketing-consumer

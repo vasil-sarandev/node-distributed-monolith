@@ -1,6 +1,6 @@
 # Deployment
 
-This project is a **distributed monolith**: one codebase, one Docker image, multiple independently deployable processes (API + Kafka consumers).
+This project is a **modulith**: one codebase, one Docker image, multiple independently deployable processes (API + Kafka consumers).
 
 ## Architecture overview
 
@@ -72,7 +72,7 @@ A single multi-stage `Dockerfile` produces different targets:
 Build the production image (default target):
 
 ```bash
-docker build -t node-distributed-monolith:local .
+docker build -t node-modulith:local .
 ```
 
 The default `CMD` starts the API:
@@ -146,8 +146,8 @@ On merge to `main` or on release tag:
 Conceptual workflow step:
 
 ```yaml
-- run: docker build -t $ECR_REGISTRY/node-distributed-monolith:$IMAGE_TAG .
-- run: docker push $ECR_REGISTRY/node-distributed-monolith:$IMAGE_TAG
+- run: docker build -t $ECR_REGISTRY/node-modulith:$IMAGE_TAG .
+- run: docker push $ECR_REGISTRY/node-modulith:$IMAGE_TAG
 ```
 
 The workflow builds **once** and pushes **one image**. It does not start the application.
@@ -157,7 +157,7 @@ The workflow builds **once** and pushes **one image**. It does not start the app
 ECR stores immutable image tags. All ECS services reference the same repository:
 
 ```
-123456789012.dkr.ecr.<region>.amazonaws.com/node-distributed-monolith:abc1234
+123456789012.dkr.ecr.<region>.amazonaws.com/node-modulith:abc1234
 ```
 
 ### 3. Amazon ECS (runtime orchestration)
@@ -166,9 +166,9 @@ Each process is a separate **ECS service** with its own task definition. Service
 
 | ECS service | Image | Command override | Load balancer |
 |-------------|-------|------------------|---------------|
-| `api` | `.../node-distributed-monolith:abc1234` | `node dist/api/app.js` | Yes (ALB) |
-| `user-events-consumer` | `.../node-distributed-monolith:abc1234` | `node dist/consumers/user-events/app.js` | No |
-| `order-events-consumer` | `.../node-distributed-monolith:abc1234` | `node dist/consumers/order-events/app.js` | No |
+| `api` | `.../node-modulith:abc1234` | `node dist/api/app.js` | Yes (ALB) |
+| `user-events-consumer` | `.../node-modulith:abc1234` | `node dist/consumers/user-events/app.js` | No |
+| `order-events-consumer` | `.../node-modulith:abc1234` | `node dist/consumers/order-events/app.js` | No |
 
 **Independent deployments:** updating the API service task definition rolls out API tasks only. Consumer services stay on their current task definition until explicitly updated to the new image tag.
 
@@ -243,8 +243,8 @@ Never commit secrets. Never `COPY` env files into the production image.
 Build and run the `runtime` stage without compose volumes:
 
 ```bash
-docker build -t node-distributed-monolith:local .
-docker run --rm -p 3000:3000 -e PORT=3000 node-distributed-monolith:local
+docker build -t node-modulith:local .
+docker run --rm -p 3000:3000 -e PORT=3000 node-modulith:local
 ```
 
 This validates the same artifact CI pushes to ECR — compiled output, production dependencies, no bind mounts.

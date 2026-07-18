@@ -1,5 +1,5 @@
 {
-  "name": "node-distributed-monolith",
+  "name": "node-modulith",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -17,14 +17,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vasil-sarandev/node-distributed-monolith-starter.git"
+    "url": "git+https://github.com/vasil-sarandev/node-modulith.git"
   },
   "author": "vasil.sarandev@gmail.com",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/vasil-sarandev/node-distributed-monolith-starter/issues"
+    "url": "https://github.com/vasil-sarandev/node-modulith/issues"
   },
-  "homepage": "https://github.com/vasil-sarandev/node-distributed-monolith-starter#readme",
+  "homepage": "https://github.com/vasil-sarandev/node-modulith#readme",
   "dependencies": {
     "express": "^5.2.1",
     "kafkajs": "^2.2.4"

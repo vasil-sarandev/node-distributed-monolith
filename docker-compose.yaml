@@ -28,7 +28,7 @@ services:
     environment:
       NODE_ENV: development
       KAFKA_BROKERS: kafka:9092
-      KAFKA_CLIENT_ID: node-distributed-monolith-user-marketing-consumer
+      KAFKA_CLIENT_ID: node-modulith-user-marketing-consumer
       KAFKA_GROUP_ID: user-marketing-consent-consumer
     depends_on:
       kafka:
@@ -49,7 +49,7 @@ services:
     environment:
       NODE_ENV: development
       KAFKA_BROKERS: kafka:9092
-      KAFKA_CLIENT_ID: node-distributed-monolith-product-restocked-consumer
+      KAFKA_CLIENT_ID: node-modulith-product-restocked-consumer
       KAFKA_GROUP_ID: product-restocked-consumer
     depends_on:
       kafka:

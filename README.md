@@ -1,6 +1,6 @@
-# node-distributed-monolith
+# node-modulith
 
-A TypeScript starter for a **distributed monolith**: one codebase, one Docker image, multiple independently deployable processes (HTTP API + Kafka consumers).
+A TypeScript starter for a **modulith**: one codebase, one Docker image, multiple independently deployable processes (HTTP API + Kafka consumers).
 
 The API handles HTTP traffic and publishes domain events. Consumers subscribe to Kafka topics and run side effects asynchronously. Shared Kafka helpers and message types live in `src/shared/`.
 

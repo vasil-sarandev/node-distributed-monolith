@@ -1,5 +1,5 @@
 name: Continiuous Integration & Deployment
-run-name: ${{ github.run_id }} - Node Distributed Monolith CI&CD - 🚀
+run-name: ${{ github.run_id }} - Node Modulith CI&CD - 🚀
 
 on:
   push:
@@ -45,7 +45,7 @@ jobs:
       - name: Build and push Docker image to ECR
         env:
           ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
-          ECR_REPOSITORY: node-distributed-monolith
+          ECR_REPOSITORY: node-modulith
           IMAGE_TAG: ${{ github.sha }}
         run: |
           docker build -f ./Dockerfile --target runtime \
