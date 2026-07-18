@@ -36,9 +36,9 @@ flowchart LR
   ECS --> MSK
 ```
 
-| Process | Role | Typical entrypoint |
-|---------|------|--------------------|
-| API | HTTP server, publishes events | `node dist/api/app.js` |
+| Process  | Role                                         | Typical entrypoint                  |
+| -------- | -------------------------------------------- | ----------------------------------- |
+| API      | HTTP server, publishes events                | `node dist/api/app.js`              |
 | Consumer | Subscribes to one Kafka topic, runs handlers | `node dist/consumers/<name>/app.js` |
 
 Each consumer lives under `src/consumers/` and maps to **one topic**. Add a new consumer when a new topic needs its own processing logic or scaling profile.
@@ -62,12 +62,12 @@ src/
 
 A single multi-stage `Dockerfile` produces different targets:
 
-| Stage | Used for | Contents |
-|-------|----------|----------|
-| `development` | Local dev via compose | Source, dev deps, `tsx watch` |
-| `install-deps` | Build intermediate | Production `node_modules` only |
-| `build` | Build intermediate | Compiles TypeScript → `dist/` |
-| `runtime` | **Production** | Production deps + `dist/` only |
+| Stage          | Used for              | Contents                       |
+| -------------- | --------------------- | ------------------------------ |
+| `development`  | Local dev via compose | Source, dev deps, `tsx watch`  |
+| `install-deps` | Build intermediate    | Production `node_modules` only |
+| `build`        | Build intermediate    | Compiles TypeScript → `dist/`  |
+| `runtime`      | **Production**        | Production deps + `dist/` only |
 
 Build the production image (default target):
 
@@ -164,11 +164,13 @@ ECR stores immutable image tags. All ECS services reference the same repository:
 
 Each process is a separate **ECS service** with its own task definition. Services share the ECR image URI but differ in command, environment, scaling, and networking.
 
-| ECS service | Image | Command override | Load balancer |
-|-------------|-------|------------------|---------------|
-| `api` | `.../node-modulith:abc1234` | `node dist/api/app.js` | Yes (ALB) |
-| `user-events-consumer` | `.../node-modulith:abc1234` | `node dist/consumers/user-events/app.js` | No |
-| `order-events-consumer` | `.../node-modulith:abc1234` | `node dist/consumers/order-events/app.js` | No |
+| ECS service                  | Image                       | Command override                                       | Load balancer |
+| ---------------------------- | --------------------------- | ------------------------------------------------------ | ------------- |
+| `api`                        | `.../node-modulith:abc1234` | _(none — image's default `CMD`)_                       | Yes (ALB)     |
+| `user-marketing-consumer`    | `.../node-modulith:abc1234` | `node dist/consumers/user-marketing-consumer/index.js` | No            |
+| `product-restocked-consumer` | `.../node-modulith:abc1234` | `node dist/consumers/product-restocked/index.js`       | No            |
+
+The API's ALB target group needs a real health-check route — `GET /health` (mounted in `src/api/modules/app-router.ts`) exists for exactly this.
 
 **Independent deployments:** updating the API service task definition rolls out API tasks only. Consumer services stay on their current task definition until explicitly updated to the new image tag.
 
@@ -178,10 +180,10 @@ Each process is a separate **ECS service** with its own task definition. Service
 
 ## Kafka
 
-| Environment | Broker | Topics |
-|-------------|--------|--------|
-| Local | Kafka container in compose | Created via init script or CLI |
-| Production | Amazon MSK (or managed Kafka) | Provisioned via IaC; explicit partition counts |
+| Environment | Broker                        | Topics                                         |
+| ----------- | ----------------------------- | ---------------------------------------------- |
+| Local       | Kafka container in compose    | Created via init script or CLI                 |
+| Production  | Amazon MSK (or managed Kafka) | Provisioned via IaC; explicit partition counts |
 
 The API publishes to topics. Each consumer subscribes to **one topic** with its own consumer group. Topic names and message schemas should match across environments; partition counts may differ (fewer locally, more in prod).
 
@@ -191,20 +193,20 @@ The API publishes to topics. Each consumer subscribes to **one topic** with its 
 
 Environment variables are **not** baked into the image.
 
-| Environment | How config is provided |
-|-------------|------------------------|
-| Local compose | `environment:` / `env_file:` in `docker-compose.yaml` |
-| ECS | Task definition env vars + AWS Secrets Manager / SSM Parameter Store |
+| Environment   | How config is provided                                               |
+| ------------- | -------------------------------------------------------------------- |
+| Local compose | `environment:` / `env_file:` in `docker-compose.yaml`                |
+| ECS           | Task definition env vars + AWS Secrets Manager / SSM Parameter Store |
 
 Common variables:
 
-| Variable | Used by |
-|----------|---------|
-| `PORT` | API |
-| `NODE_ENV` | All |
-| `KAFKA_BROKERS` | API (produce), consumers (consume) |
-| `KAFKA_TOPIC` | Consumers (one topic per consumer) |
-| `KAFKA_GROUP_ID` | Consumers |
+| Variable          | Used by                            |
+| ----------------- | ---------------------------------- |
+| `PORT`            | API                                |
+| `NODE_ENV`        | API                                |
+| `KAFKA_BROKERS`   | API (produce), consumers (consume) |
+| `KAFKA_CLIENT_ID` | Consumers                          |
+| `KAFKA_GROUP_ID`  | Consumers                          |
 
 Never commit secrets. Never `COPY` env files into the production image.
 
@@ -212,14 +214,14 @@ Never commit secrets. Never `COPY` env files into the production image.
 
 ## What lives where
 
-| Concern | Location |
-|---------|----------|
-| How to build the image | `Dockerfile` |
-| Local full-stack dev | `docker-compose.yaml`, `npm run dev` |
-| Compile TypeScript | `npm run compile` (used inside Docker build) |
-| CI build + push | `.github/workflows/` (future) |
+| Concern                     | Location                                        |
+| --------------------------- | ----------------------------------------------- |
+| How to build the image      | `Dockerfile`                                    |
+| Local full-stack dev        | `docker-compose.yaml`, `npm run dev`            |
+| Compile TypeScript          | `npm run compile` (used inside Docker build)    |
+| CI build + push             | `.github/workflows/` (future)                   |
 | Prod run commands + scaling | ECS task definitions / Terraform / CDK (future) |
-| Kafka cluster | MSK (prod), compose service (local) |
+| Kafka cluster               | MSK (prod), compose service (local)             |
 
 `package.json` does not define production start commands. Process entrypoints live in the Dockerfile (`CMD` default) and are overridden per service in compose (local) or ECS (production).
 
@@ -232,8 +234,8 @@ Never commit secrets. Never `COPY` env files into the production image.
 3. Ensure the topic exists (local init script; prod IaC).
 4. Add an ECS service + task definition with:
    - Same ECR image tag as API
-   - `command: ["node", "dist/consumers/<topic-name>/app.js"]`
-   - Consumer-specific env (topic, group id, broker URL)
+   - `command: ["node", "dist/consumers/<name>/index.js"]`
+   - Consumer-specific env (`KAFKA_CLIENT_ID`, `KAFKA_GROUP_ID`, `KAFKA_BROKERS`) — the topic itself is not env-driven, it's hardcoded via the `Topics` enum in the consumer's code
 5. Deploy the new ECS service independently of the API.
 
 ---
